@@ -11,6 +11,9 @@
 #include <Arduino.h>
 
 #define BUZZER 19
+#define SW1 12 // Can be used to toggle
+#define SW3 13
+
 
 void activateBuzzer(boolean state);
 int val = 0;
@@ -21,15 +24,24 @@ void setup() {
   
   ledcSetup(3, 8000, 12);
   ledcAttachPin(BUZZER, 3);
-  pinMode(12, INPUT);
+  pinMode(SW1, INPUT);
+
+  pinMode(BUZZER, OUTPUT);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  activateBuzzer(true);
+  
+  //activateBuzzer(true);
+  
+  // Reading input from SW1
   val = digitalRead(12);
   Serial.println(val);
+  if(!val){
+    digitalWrite(BUZZER,HIGH); // BUZZER RINGS
+  }
+  
   delay(500);
+
 }
 
 void activateBuzzer(boolean state){
