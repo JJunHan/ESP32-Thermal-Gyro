@@ -9,42 +9,54 @@
  * 
  */
 #include <Arduino.h>
+#include <melody_player.h>
+#include <melody_factory.h>
 
 #define BUZZER 19
 #define SW1 12 // Can be used to toggle
 #define SW3 13
 
 
-void activateBuzzer(boolean state);
 int val = 0;
+
+// Buzzer implementation 
+MelodyPlayer player1(19);
+String notes1[] = { "C4", "G3", "G3", "A3", "G3", "SILENCE", "B3", "C4" };
+Melody melody1 = MelodyFactory.load("Nice Melody", 500, notes1, 8);
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  
-  ledcSetup(3, 8000, 12);
-  ledcAttachPin(BUZZER, 3);
+  pinMode(BUZZER,OUTPUT);
+  ledcSetup(0, 2000, 8); //8 bit resolution max 255
+  ledcAttachPin(BUZZER, 0);
   pinMode(SW1, INPUT);
-
-  pinMode(BUZZER, OUTPUT);
+  
+ 
+  Serial.print("Playing... ");
+  //player1.playAsync(melody1);
 }
 
 void loop() {
   
-  //activateBuzzer(true);
-  
+  //ledcWriteTone(0, 2000);
+  //ledcWrite(0, 100);
+  //delay(1000);
+
   // Reading input from SW1
   val = digitalRead(12);
   Serial.println(val);
+  
   if(!val){
-    digitalWrite(BUZZER,HIGH); // BUZZER RINGS
+    //digitalWrite(BUZZER,HIGH); // BUZZER RINGS
+    player1.playAsync(melody1);
+  }
+  else{
+    digitalWrite(BUZZER,LOW);
   }
   
   delay(500);
+  
 
-}
 
-void activateBuzzer(boolean state){
-  // If the state is true, activate the buzzer with the given frequency.
-  if(state) ledcWriteTone(3, 500);
 }
