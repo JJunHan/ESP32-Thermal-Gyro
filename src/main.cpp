@@ -9,54 +9,58 @@
  * 
  */
 #include <Arduino.h>
-#include <melody_player.h>
-#include <melody_factory.h>
+#include <CuteBuzzerSounds.h>
 
-#define BUZZER 19
-#define SW1 12 // Can be used to toggle
-#define SW3 13
+#define BUZZER_PIN 19
+#define BUZZER_CHANNEL 5
+#define SW1_PIN 12 // Can be used to toggle
+#define SW3_PIN 13 // Can be used to toggle
 
-
-int val = 0;
-
-// Buzzer implementation 
-MelodyPlayer player1(19);
-String notes1[] = { "C4", "G3", "G3", "A3", "G3", "SILENCE", "B3", "C4" };
-Melody melody1 = MelodyFactory.load("Nice Melody", 500, notes1, 8);
+int SW1_value = 0;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
-  pinMode(BUZZER,OUTPUT);
-  ledcSetup(0, 2000, 8); //8 bit resolution max 255
-  ledcAttachPin(BUZZER, 0);
-  pinMode(SW1, INPUT);
   
+  // Declaration of GPIO Pins
+  pinMode(BUZZER_PIN,OUTPUT);
+  pinMode(SW1_PIN, INPUT);
+  pinMode(SW3_PIN, INPUT);
+
+  // Set up Buzzer Channel
+  ledcSetup(BUZZER_CHANNEL, 2000, 8); //8 bit resolution max 255
+  ledcAttachPin(BUZZER_PIN, BUZZER_CHANNEL);
+
+  // Set up Library variables
+  cute.init(BUZZER_PIN);
  
-  Serial.print("Playing... ");
-  //player1.playAsync(melody1);
 }
 
 void loop() {
   
-  //ledcWriteTone(0, 2000);
-  //ledcWrite(0, 100);
-  //delay(1000);
-
   // Reading input from SW1
-  val = digitalRead(12);
-  Serial.println(val);
   
-  if(!val){
-    //digitalWrite(BUZZER,HIGH); // BUZZER RINGS
-    player1.playAsync(melody1);
+  SW1_value = digitalRead(12);
+  Serial.println(SW1_value);
+  
+  if(!SW1_value){ // Upon button press
+    
+    // Using a Library
+    //cute.play(S_CONNECTION);
+    
+    // Manually play the Ding Dong Chime
+    ledcWriteTone(BUZZER_CHANNEL, 698);
+    delay(500);     // milliseconds
+    ledcWrite(BUZZER_CHANNEL, 0); // no tone as no duty cycle
+    delay(50);
+    ledcWriteTone(BUZZER_CHANNEL, 523);     
+    delay(600);
+    ledcWrite(BUZZER_CHANNEL, 0);
+    
   }
   else{
-    digitalWrite(BUZZER,LOW);
+    digitalWrite(BUZZER_PIN,LOW);
   }
   
-  delay(500);
   
-
-
+  
 }
