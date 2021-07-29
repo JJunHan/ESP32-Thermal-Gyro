@@ -19,7 +19,11 @@ Mini project that i designed on EASYEDA consisting of an ESP32 with thermal and 
 - Basic circuit designing
 - Basic PCB routing & tracing
 - GPIO interactions
-- Manging serial communication protocols
+- Managing serial communication protocols
+
+## Work in progress
+
+- Unable to control LED driver
 
 ## How it looks like
 
