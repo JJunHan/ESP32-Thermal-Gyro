@@ -32,3 +32,6 @@ Mini project that i designed on EASYEDA consisting of an ESP32 with thermal and 
 ## Things to take note
 
 - Watch out when choosing a Mosfet to drive a component. Make sure that it saturates upon the correct GATE-SOURCE VOLTAGE (V)
+- Read the data sheet ensure it is an IO port before connecting to I2C bus... (port 34,35 are NOT I2C bus compatible)
+- Check the schematic and ensure all pins go to where they are suppose to go
+- HDC1080 has different configuration from HDC2010 and 2080 hence their software kits wont work. Also, you must edit the SDA SCL pins yourself Via Wire.h
