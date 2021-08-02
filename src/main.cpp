@@ -19,8 +19,8 @@
 #include <Adafruit_Sensor.h>
 #include "main.h"
 #include <Wire.h>
-//#include "I2Cdev.h"
-//#include "MPU6050.h"
+#include "I2Cdev.h"
+#include "MPU6050.h"
 #include "ClosedCube_HDC1080.h"
 
 #define ADDR_TEMP 0x40
@@ -39,8 +39,8 @@
 TwoWire I2Ctwo = TwoWire(1);
 
 // Server Variables
-const char* _ssid = "x";
-const char* _password = "x";
+const char* _ssid = "SINGTEL-BE9C (2.4G)";
+const char* _password = "oopheishoh";
 AsyncWebServer server(80);
 
 // GPIO Variables
@@ -49,12 +49,12 @@ int SW1_value = 0;
 // Gyro Variables
 //Adafruit_MPU6050 mpu;
 //sensors_event_t acc, gyro, temp;
-//MPU6050 accelgyro;
+MPU6050 accelgyro;
 //float gyroX, gyroY, gyroZ;
 //float accX, accY, accZ;
 //float temperature;
-//int16_t ax, ay, az;
-//int16_t gx, gy, gz;
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
 
 // Gyroscope sensor deviation
 float gyroXerror = 0.07;
@@ -73,24 +73,29 @@ void initTEMP(){
 void initMPU(){
   //I2Cone.begin(SDA_1, SCL_1, 100000); 
   //while(!I2Ctwo.begin(SDA_2, SCL_2, 100000)){
+  #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+      Wire.begin(23,22,100000);
+  #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+      Fastwire::setup(400, true);
+  #endif
 
-  bool val;
-  val = I2Ctwo.begin(34,35,100000);
-  Serial.println(val);
+  //bool val;
+  //val = I2Ctwo.begin(23,22,100000);
+  //Serial.println(val);
 
-  if(!val)
-  {
-    Serial.println("Failed to connect to MPU");
-  }
+  //if(!val)
+  //{
+  //  Serial.println("Failed to connect to MPU");
+  //}
   
-  //Serial.println("Successfully Connected");
+  Serial.println("Successfully Connected");
 
   // initialize device
-  //Serial.println("Initializing I2C devices...");
-  //accelgyro.initialize();
+  Serial.println("Initializing I2C devices...");
+  accelgyro.initialize();
 
-  //Serial.println("Testing device connections...");
-  //Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  Serial.println("Testing device connections...");
+  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
   /*
   while (!mpu.begin(0x68, &I2Ctwo)) {
@@ -126,8 +131,8 @@ void setup() {
   while(!Serial);
   //initWIFI();
   //initSPIFFS();
-  //initMPU();
-  initTEMP();
+  initMPU();
+  //initTEMP();
 
   // List all files in the flash system
   //listDir(SPIFFS,"/",3);
@@ -160,12 +165,40 @@ void setup() {
 
 void loop() {
   
-  Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());
-  Serial.print("\t\tHumidity (%): "); Serial.println(sensor.readHumidity());
-  delay(1000);
+  //Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());
+  //Serial.print("\t\tHumidity (%): "); Serial.println(sensor.readHumidity());
+  //delay(1000);
   
-  //accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
   /*
+  mpu.getEvent(&acc, &gyro, &temp);
+  Serial.print("Acceleration X: ");
+  Serial.print(acc.acceleration.x);
+  Serial.print(", Y: ");
+  Serial.print(acc.acceleration.y);
+  Serial.print(", Z: ");
+  Serial.print(acc.acceleration.z);
+  Serial.println(" m/s^2");
+
+  Serial.print("Rotation X: ");
+  Serial.print(gyro.gyro.x);
+  Serial.print(", Y: ");
+  Serial.print(gyro.gyro.y);
+  Serial.print(", Z: ");
+  Serial.print(gyro.gyro.z);
+  Serial.println(" rad/s");
+
+  Serial.print("Temperature: ");
+  Serial.print(temp.temperature);
+  Serial.println(" degC");
+
+  Serial.println("");
+  delay(500);
+  */
+  
+
+  accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  
   Serial.print("a/g:\t");
   Serial.print(ax); Serial.print("\t");
   Serial.print(ay); Serial.print("\t");
@@ -173,8 +206,9 @@ void loop() {
   Serial.print(gx); Serial.print("\t");
   Serial.print(gy); Serial.print("\t");
   Serial.println(gz);
-  */
+  delay(2000);
   
+
   // Reading input from SW1
   /*SW1_value = digitalRead(12);
   //Serial.println(SW1_value);
