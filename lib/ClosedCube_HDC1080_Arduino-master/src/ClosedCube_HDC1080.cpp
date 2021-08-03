@@ -39,7 +39,7 @@ ClosedCube_HDC1080::ClosedCube_HDC1080()
 
 void ClosedCube_HDC1080::begin(uint8_t address) {
 	_address = address;
-	Wire.begin(32,33);
+	Wire1.begin(32,33);
 
 	setResolution(HDC1080_RESOLUTION_14BIT, HDC1080_RESOLUTION_14BIT);
 }
@@ -82,11 +82,11 @@ HDC1080_Registers ClosedCube_HDC1080::readRegister() {
 }
 
 void ClosedCube_HDC1080::writeRegister(HDC1080_Registers reg) {
-	Wire.beginTransmission(_address);
-	Wire.write(HDC1080_CONFIGURATION);
-	Wire.write(reg.rawData);
-	Wire.write(0x00);
-	Wire.endTransmission();
+	Wire1.beginTransmission(_address);
+	Wire1.write(HDC1080_CONFIGURATION);
+	Wire1.write(reg.rawData);
+	Wire1.write(0x00);
+	Wire1.endTransmission();
 	delay(10);
 }
 
@@ -98,12 +98,12 @@ void ClosedCube_HDC1080::heatUp(uint8_t seconds) {
 
 	uint8_t buf[4];
 	for (int i = 1; i < (seconds*66); i++) {
-		Wire.beginTransmission(_address);
-		Wire.write(0x00);
-		Wire.endTransmission();
+		Wire1.beginTransmission(_address);
+		Wire1.write(0x00);
+		Wire1.endTransmission();
 		delay(20);
-		Wire.requestFrom(_address, (uint8_t)4);
-		Wire.readBytes(buf, (size_t)4);
+		Wire1.requestFrom(_address, (uint8_t)4);
+		Wire1.readBytes(buf, (size_t)4);
 	}
 	reg.Heater = 0;
 	reg.ModeOfAcquisition = 0;
@@ -138,15 +138,15 @@ uint16_t ClosedCube_HDC1080::readDeviceId() {
 }
 
 uint16_t ClosedCube_HDC1080::readData(uint8_t pointer) {
-	Wire.beginTransmission(_address);
-	Wire.write(pointer);
-	Wire.endTransmission();
+	Wire1.beginTransmission(_address);
+	Wire1.write(pointer);
+	Wire1.endTransmission();
 	
 	delay(9);
-	Wire.requestFrom(_address, (uint8_t)2);
+	Wire1.requestFrom(_address, (uint8_t)2);
 
-	byte msb = Wire.read();
-	byte lsb = Wire.read();
+	byte msb = Wire1.read();
+	byte lsb = Wire1.read();
 
 	return msb << 8 | lsb;
 }

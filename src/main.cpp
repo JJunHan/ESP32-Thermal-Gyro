@@ -61,7 +61,6 @@ void initTEMP(){
   sensor.begin(ADDR_TEMP);
 }
 
-
 void initMPU(){
 
   #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
@@ -114,7 +113,7 @@ void setup() {
   //initWIFI();
   //initSPIFFS();
   initMPU();
-  //initTEMP();
+  initTEMP();
   //initBUZZER();
 
   // List all files in the flash system
@@ -129,21 +128,25 @@ void setup() {
 
 
   // Declaration of LED driver config
-  /*
+  
   led1642gw_init();
-  led1642gw_turn_all_on(); // turn on all switches 
   led1642gw_flush(); //push the ledbuffer into the registers accordingly
-  */
+  led1642gw_turn_all_on(); // turn on all switches 
+  //led1642gw_flush(); //push the ledbuffer into the registers accordingly
+  
   
 }
 
 void loop() {
   
-  //Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());
-  //Serial.print("\t\tHumidity (%): "); Serial.println(sensor.readHumidity());
+  //led1642gw_flush(); //push the ledbuffer into the registers accordingly
+  //led1642gw_flush(); //push the ledbuffer into the registers accordingly
   //delay(1000);
+  Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());
+  Serial.print("\t\tHumidity (%): "); Serial.println(sensor.readHumidity());
+  delay(1000);
 
-/*
+
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
   
   Serial.print("a/g:\t");
@@ -156,7 +159,7 @@ void loop() {
   Serial.print("Temperature of gyro: ");
   Serial.println((accelgyro.getTemperature() + 521)/340 + 35);
   delay(500);
-*/
+
 
   // Reading input from SW1
   /*SW1_value = digitalRead(12);

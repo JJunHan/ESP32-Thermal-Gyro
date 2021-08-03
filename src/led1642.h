@@ -23,4 +23,5 @@ void led1642gw_flush(void);
 void led1642gw_set_ALL();
 void led1642gw_set_channel(uint8_t channel, uint16_t value);
 
+
 #endif
