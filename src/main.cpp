@@ -15,12 +15,10 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
-#include "main.h"
 #include <Wire.h>
 #include "I2Cdev.h"
 #include "MPU6050.h"
+#include "files.h"
 #include "ClosedCube_HDC1080.h"
 
 #define ADDR_TEMP 0x40
@@ -33,10 +31,8 @@
 #define LED_SDI 26
 #define SDA_1 32
 #define SCL_1 33
-#define SDA_2 34
-#define SCL_2 35
-
-TwoWire I2Ctwo = TwoWire(1);
+#define SDA_2 23
+#define SCL_2 22
 
 // Server Variables
 const char* _ssid = "SINGTEL-BE9C (2.4G)";
@@ -47,11 +43,7 @@ AsyncWebServer server(80);
 int SW1_value = 0;
 
 // Gyro Variables
-//Adafruit_MPU6050 mpu;
-//sensors_event_t acc, gyro, temp;
 MPU6050 accelgyro;
-//float gyroX, gyroY, gyroZ;
-//float accX, accY, accZ;
 //float temperature;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
@@ -71,22 +63,12 @@ void initTEMP(){
 
 
 void initMPU(){
-  //I2Cone.begin(SDA_1, SCL_1, 100000); 
-  //while(!I2Ctwo.begin(SDA_2, SCL_2, 100000)){
+
   #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-      Wire.begin(23,22,100000);
+      Wire.begin(SDA_2,SCL_2,100000);
   #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
       Fastwire::setup(400, true);
   #endif
-
-  //bool val;
-  //val = I2Ctwo.begin(23,22,100000);
-  //Serial.println(val);
-
-  //if(!val)
-  //{
-  //  Serial.println("Failed to connect to MPU");
-  //}
   
   Serial.println("Successfully Connected");
 
@@ -97,15 +79,6 @@ void initMPU(){
   Serial.println("Testing device connections...");
   Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
-  /*
-  while (!mpu.begin(0x68, &I2Ctwo)) {
-    mpu.begin(0x68, &I2Ctwo);
-    Serial.println("Failed to find MPU6050 chip");
-    delay(2000);
-  }
-  
-  Serial.println("MPU6050 Found!");
-  */
 }
 
 void initSPIFFS() {
@@ -126,6 +99,15 @@ void initWIFI(){
   Serial.println(WiFi.localIP());
 }
 
+void initBUZZER(){
+  // Set up Buzzer Channel
+  ledcSetup(BUZZER_CHANNEL, 2000, 8); //8 bit resolution max 255
+  ledcAttachPin(BUZZER_PIN, BUZZER_CHANNEL);
+
+  // Set up Library variables
+  cute.init(BUZZER_PIN);
+}
+
 void setup() {
   Serial.begin(115200);
   while(!Serial);
@@ -133,6 +115,7 @@ void setup() {
   //initSPIFFS();
   initMPU();
   //initTEMP();
+  //initBUZZER();
 
   // List all files in the flash system
   //listDir(SPIFFS,"/",3);
@@ -142,18 +125,9 @@ void setup() {
   pinMode(SW1_PIN, INPUT);
   pinMode(SW3_PIN, INPUT);
 
-  // Set up Buzzer Channel
-  //ledcSetup(BUZZER_CHANNEL, 2000, 8); //8 bit resolution max 255
-  //ledcAttachPin(BUZZER_PIN, BUZZER_CHANNEL);
-
   // Set up LED Driver Channel
 
-  //ledcSetup(1, 0, 8); //8 bit resolution max 255
-  //ledcAttachPin(LED_CLK, 1);
 
-  // Set up Library variables
-  //cute.init(BUZZER_PIN);
-  
   // Declaration of LED driver config
   /*
   led1642gw_init();
@@ -168,35 +142,8 @@ void loop() {
   //Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());
   //Serial.print("\t\tHumidity (%): "); Serial.println(sensor.readHumidity());
   //delay(1000);
-  
 
-  /*
-  mpu.getEvent(&acc, &gyro, &temp);
-  Serial.print("Acceleration X: ");
-  Serial.print(acc.acceleration.x);
-  Serial.print(", Y: ");
-  Serial.print(acc.acceleration.y);
-  Serial.print(", Z: ");
-  Serial.print(acc.acceleration.z);
-  Serial.println(" m/s^2");
-
-  Serial.print("Rotation X: ");
-  Serial.print(gyro.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(gyro.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(gyro.gyro.z);
-  Serial.println(" rad/s");
-
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println(" degC");
-
-  Serial.println("");
-  delay(500);
-  */
-  
-
+/*
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
   
   Serial.print("a/g:\t");
@@ -206,8 +153,10 @@ void loop() {
   Serial.print(gx); Serial.print("\t");
   Serial.print(gy); Serial.print("\t");
   Serial.println(gz);
-  delay(2000);
-  
+  Serial.print("Temperature of gyro: ");
+  Serial.println((accelgyro.getTemperature() + 521)/340 + 35);
+  delay(500);
+*/
 
   // Reading input from SW1
   /*SW1_value = digitalRead(12);

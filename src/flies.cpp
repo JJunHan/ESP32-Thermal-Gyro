@@ -1,5 +1,4 @@
-#include "SPIFFS.h"
-#include <Arduino.h>
+#include "files.h"
 
 String readFile(fs::FS &fs, const char * path){
 
