@@ -1,0 +1,57 @@
+<!DOCTYPE HTML><html><head>
+<meta name="author" content="Jun Han">
+<script>
+    function submitMessage() { 
+        alert("Saved value to ESP SPIFFS");
+        setTimeout(function(){ document.location.reload(false); }, 500);   
+    }
+
+    setInterval(function () {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                document.getElementById("Gyro").innerHTML = xhttp.responseText;
+            }
+        };
+        xhttp.open("GET","/gyro",true);
+        xhttp.send(); // Sends a request and process the response by changing the variable text
+    }, 1000);
+
+
+</script>
+<style>
+    html {
+      font-family: Arial;
+      display: inline-block;
+      margin: 0px auto;
+      text-align: center;
+    }
+    .output-labels{
+      font-size: 1.2rem;
+      vertical-align:middle;
+      padding-bottom: 15px;
+    }
+    .output-labels2{
+      font-size: 1rem;
+      vertical-align:middle;
+      padding-bottom: 15px;
+      color: red;
+    }
+</style>
+</head>
+
+
+<body>
+
+<h2>ESP32 Mini Proj</h2>
+
+<h3>Output (every 1s)</h3>
+  
+<div>
+    <span class="output-labels">Gyro Readings: </span>
+    <span class="output-labels2" id = "Gyro">%GyroPlaceholder%</span><br>
+    <br>
+
+</div>
+
+</body></html>

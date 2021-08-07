@@ -34,10 +34,14 @@
 #define SDA_2 23
 #define SCL_2 22
 
+//#define DISPLAY_ALL //uncomment this to show all readings via serial monitor
+
+
 // Server Variables
 const char* _ssid = "SINGTEL-BE9C (2.4G)";
-const char* _password = "x";
+const char* _password = "";
 AsyncWebServer server(80);
+String processors(const String& var);
 
 // GPIO Variables
 int SW1_value = 0;
@@ -47,11 +51,7 @@ MPU6050 accelgyro;
 //float temperature;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
-
-// Gyroscope sensor deviation
-float gyroXerror = 0.07;
-float gyroYerror = 0.03;
-float gyroZerror = 0.01;
+char s[128];
 
 // Temperature & Humidity Variables
 ClosedCube_HDC1080 sensor;
@@ -107,13 +107,26 @@ void initBUZZER(){
   cute.init(BUZZER_PIN);
 }
 
+String processors(const String& var){
+  //if(var == "inputString"){
+  //  return RadarHandler.readFile(SPIFFS, "/inputString.txt");
+  //}
+  
+  snprintf(s, sizeof(s), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
+  if(var == "GyroPlaceholder"){
+    return s;
+  }
+  return String();
+}
+
+
 void setup() {
   Serial.begin(115200);
   while(!Serial);
-  //initWIFI();
-  //initSPIFFS();
+  initWIFI();
+  initSPIFFS();
   initMPU();
-  initTEMP();
+  //initTEMP();
   //initBUZZER();
 
   // List all files in the flash system
@@ -124,29 +137,51 @@ void setup() {
   pinMode(SW1_PIN, INPUT);
   pinMode(SW3_PIN, INPUT);
 
-  // Set up LED Driver Channel
-
-
   // Declaration of LED driver config
-  
   led1642gw_init();
   led1642gw_flush(); //push the ledbuffer into the registers accordingly
   led1642gw_turn_all_on(); // turn on all switches 
-  //led1642gw_flush(); //push the ledbuffer into the registers accordingly
   
-  
+  // Route for root web page
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/index.html", "text/html", false, processors);
+  });
+
+  // Async sends number of detected targets to HTTP Server
+  server.on("/gyro", HTTP_GET, [](AsyncWebServerRequest *request){
+    snprintf(s, sizeof(s), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
+    request->send(200, "text/plain", s);
+  });
+  server.on("/temp", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", String());
+  });
+
+  /*
+    // This to attach images
+  server.on("/owl", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/owl.png", "image/png");
+  });
+  */
+
+  // On error requests
+  server.onNotFound([](AsyncWebServerRequest *request){
+    request->send(404, "text/plain", "The content you are looking for was not found.");
+  });
+
+  // Start server
+  server.begin();
+
 }
 
 void loop() {
-  
-  //led1642gw_flush(); //push the ledbuffer into the registers accordingly
-  //led1642gw_flush(); //push the ledbuffer into the registers accordingly
-  //delay(1000);
+
+  accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  #ifdef DISPLAY_ALL
+  // Humidity and Temperature readings
   Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());
   Serial.print("\t\tHumidity (%): "); Serial.println(sensor.readHumidity());
-  delay(1000);
 
-
+  // Gyro and Acc readings
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
   
   Serial.print("a/g:\t");
@@ -158,7 +193,11 @@ void loop() {
   Serial.println(gz);
   Serial.print("Temperature of gyro: ");
   Serial.println((accelgyro.getTemperature() + 521)/340 + 35);
-  delay(500);
+  delay(1000);
+
+  #else
+    
+  #endif
 
 
   // Reading input from SW1
