@@ -17,6 +17,28 @@
         xhttp.send(); // Sends a request and process the response by changing the variable text
     }, 1000);
 
+    setInterval(function () {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                document.getElementById("Temp").innerHTML = xhttp.responseText;
+            }
+        };
+        xhttp.open("GET","/temp",true);
+        xhttp.send(); // Sends a request and process the response by changing the variable text
+    }, 1000);
+
+    setInterval(function () {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                document.getElementById("Humidity").innerHTML = xhttp.responseText;
+            }
+        };
+        xhttp.open("GET","/humidity",true);
+        xhttp.send(); // Sends a request and process the response by changing the variable text
+    }, 1000);
+
 
 </script>
 <style>
@@ -50,6 +72,10 @@
 <div>
     <span class="output-labels">Gyro Readings: </span>
     <span class="output-labels2" id = "Gyro">%GyroPlaceholder%</span><br>
+    <span class="output-labels">Temp Readings: </span>
+    <span class="output-labels2" id = "Temp">%TempPlaceholder%</span><br>
+    <span class="output-labels">Humidity Readings: </span>
+    <span class="output-labels2" id = "Humidity">%HumidityPlaceholder%</span><br>
     <br>
 
 </div>

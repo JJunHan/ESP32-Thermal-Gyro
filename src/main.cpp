@@ -39,7 +39,7 @@
 
 // Server Variables
 const char* _ssid = "SINGTEL-BE9C (2.4G)";
-const char* _password = "";
+const char* _password = "x";
 AsyncWebServer server(80);
 String processors(const String& var);
 
@@ -51,7 +51,9 @@ MPU6050 accelgyro;
 //float temperature;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
-char s[128];
+char gyro[128];
+char temp[128];
+char humi[128];
 
 // Temperature & Humidity Variables
 ClosedCube_HDC1080 sensor;
@@ -112,9 +114,17 @@ String processors(const String& var){
   //  return RadarHandler.readFile(SPIFFS, "/inputString.txt");
   //}
   
-  snprintf(s, sizeof(s), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
+  snprintf(gyro, sizeof(gyro), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
+  snprintf(temp, sizeof(temp), "%f", sensor.readTemperature());
+  snprintf(humi, sizeof(humi), "%f", sensor.readHumidity());
   if(var == "GyroPlaceholder"){
-    return s;
+    return gyro;
+  }
+  else if(var == "TempPlaceholder"){
+    return temp;
+  }
+  else if(var == "HumidityPlaceholder"){
+    return humi;
   }
   return String();
 }
@@ -126,7 +136,7 @@ void setup() {
   initWIFI();
   initSPIFFS();
   initMPU();
-  //initTEMP();
+  initTEMP();
   //initBUZZER();
 
   // List all files in the flash system
@@ -149,12 +159,18 @@ void setup() {
 
   // Async sends number of detected targets to HTTP Server
   server.on("/gyro", HTTP_GET, [](AsyncWebServerRequest *request){
-    snprintf(s, sizeof(s), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
-    request->send(200, "text/plain", s);
+    snprintf(gyro, sizeof(gyro), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
+    request->send(200, "text/plain", gyro);
   });
   server.on("/temp", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/plain", String());
+    snprintf(temp, sizeof(temp), "%f", sensor.readTemperature());
+    request->send(200, "text/plain", temp);
   });
+  server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
+    snprintf(humi, sizeof(humi), "%f", sensor.readHumidity());
+    request->send(200, "text/plain", humi);
+  });
+
 
   /*
     // This to attach images
@@ -176,6 +192,7 @@ void setup() {
 void loop() {
 
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
   #ifdef DISPLAY_ALL
   // Humidity and Temperature readings
   Serial.print("Temperature (C): "); Serial.print(sensor.readTemperature());

@@ -2,6 +2,8 @@
 
 Mini project that i designed on EASYEDA consisting of an ESP32 with thermal and gyro sensors on a 2 layer PCB.
 
+Read the [things to take note](#things-to-take-note) below if you are interested to reproduce this project :)
+
 ## Features
 
 - Gyroscope, Accelerometer (MPU-6050_C24112)
@@ -21,6 +23,7 @@ Mini project that i designed on EASYEDA consisting of an ESP32 with thermal and 
 - GPIO interactions
 - Managing serial communication protocols (I2C)
 - Controlling LED Driver via toggling CLK SDI and LE Pins
+- Using char arrays than String functions to reduce heap consumption
 
 ## Work in progress
 
