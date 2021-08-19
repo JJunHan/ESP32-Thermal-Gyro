@@ -14,6 +14,7 @@ Read the [things to take note](#things-to-take-note) below if you are interested
 - Buzzer (HNB09A05)
 - 4 display 7 segment (FJ5461BH-red-orange)
 - Serveral LEDs to display the functionality of the board chips and microC
+- Webserver that displays Gyro/Acc, Temp/Humidity readings per 1 second.
 
 ## Takeaways
 
@@ -27,7 +28,7 @@ Read the [things to take note](#things-to-take-note) below if you are interested
 
 ## Work in progress
 
-- Webserver
+- Explore using a 3d model to show the movement of the board based on gyro readings
 
 ## How it looks like
 
