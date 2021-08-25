@@ -48,3 +48,8 @@ Read the [things to take note](#things-to-take-note) below if you are interested
 - To concurrently run 2 I2C channels, must make use of the Wire.h library and edit the sensor's own I2C connection portion
 - Also, i believe it is possible to run 2 sensor via the same I2C channel as they have different addresses
 - Wire your I2C components to the default pins to reduce the need to configure on the fly
+
+## References
+
+- *[Webserver guide](https://randomnerdtutorials.com/esp32-mpu-6050-web-server/)*
+- *[Json guide](https://arduinojson.org/)*
