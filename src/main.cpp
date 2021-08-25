@@ -20,6 +20,7 @@
 #include "MPU6050.h"
 #include "files.h"
 #include "ClosedCube_HDC1080.h"
+#include <ArduinoJson.h>
 
 #define ADDR_TEMP 0x40
 #define BUZZER_PIN 19
@@ -42,6 +43,9 @@ const char* _ssid = "SINGTEL-BE9C (2.4G)";
 const char* _password = "x";
 AsyncWebServer server(80);
 String processors(const String& var);
+StaticJsonDocument<200> doc;
+AsyncEventSource events("/events");
+
 
 // GPIO Variables
 int SW1_value = 0;
@@ -58,6 +62,15 @@ char humi[128];
 // Temperature & Humidity Variables
 ClosedCube_HDC1080 sensor;
 float temperature = 0, humidity = 0;
+
+// Timer variables
+unsigned long lastTime = 0;  
+unsigned long lastTimeTemperature = 0;
+unsigned long lastTimeAcc = 0;
+unsigned long gyroDelay = 10;
+unsigned long temperatureDelay = 1000;
+unsigned long accelerometerDelay = 200;
+
 
 void initTEMP(){
   sensor.begin(ADDR_TEMP);
@@ -110,13 +123,11 @@ void initBUZZER(){
 }
 
 String processors(const String& var){
-  //if(var == "inputString"){
-  //  return RadarHandler.readFile(SPIFFS, "/inputString.txt");
-  //}
-  
+
   snprintf(gyro, sizeof(gyro), "%d | %d | %d | %d | %d | %d ", ax,ay,az,gx,gy,gz);
   snprintf(temp, sizeof(temp), "%f", sensor.readTemperature());
   snprintf(humi, sizeof(humi), "%f", sensor.readHumidity());
+  
   if(var == "GyroPlaceholder"){
     return gyro;
   }
@@ -129,6 +140,18 @@ String processors(const String& var){
   return String();
 }
 
+String getAccReadings(){
+
+}
+
+String getGyroReadings(){
+
+}
+
+String getTemperature(){
+
+}
+
 
 void setup() {
   Serial.begin(115200);
@@ -138,6 +161,17 @@ void setup() {
   initMPU();
   initTEMP();
   //initBUZZER();
+
+  doc["sensor"] = "gps";
+  doc["time"] = 1351824120;
+  JsonArray data = doc.createNestedArray("data");
+  data.add(48.756080);
+  data.add(2.302038);
+
+  serializeJson(doc, Serial);
+  Serial.println();
+  serializeJsonPretty(doc, Serial);
+  
 
   // List all files in the flash system
   //listDir(SPIFFS,"/",3);
@@ -179,10 +213,35 @@ void setup() {
   });
   */
 
+  // This to send chart.min.js via spiff
+  
+  server.on("/three.min.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/three.min.js", "text/javascript");
+  });
+
+  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/script.js", "text/javascript");
+  });
+  
+  server.serveStatic("/", SPIFFS, "/");
+  
+
+
   // On error requests
   server.onNotFound([](AsyncWebServerRequest *request){
     request->send(404, "text/plain", "The content you are looking for was not found.");
   });
+
+  // Handle Web Server Events
+  events.onConnect([](AsyncEventSourceClient *client){
+    if(client->lastId()){
+      Serial.printf("Client reconnected! Last message ID that it got is: %u\n", client->lastId());
+    }
+    // send event with message "hello!", id current millis
+    // and set reconnect delay to 1 second
+    client->send("hello!", NULL, millis(), 10000);
+  });
+  server.addHandler(&events);
 
   // Start server
   server.begin();
@@ -192,6 +251,24 @@ void setup() {
 void loop() {
 
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  
+  if ((millis() - lastTime) > gyroDelay) {
+    // Send Events to the Web Server with the Sensor Readings
+    events.send(getGyroReadings().c_str(),"gyro_readings",millis());
+    lastTime = millis();
+  }
+  if ((millis() - lastTimeAcc) > accelerometerDelay) {
+    // Send Events to the Web Server with the Sensor Readings
+    events.send(getAccReadings().c_str(),"accelerometer_readings",millis());
+    lastTimeAcc = millis();
+  }
+  if ((millis() - lastTimeTemperature) > temperatureDelay) {
+    // Send Events to the Web Server with the Sensor Readings
+    events.send(getTemperature().c_str(),"temperature_reading",millis());
+    lastTimeTemperature = millis();
+  }
+
+
 
   #ifdef DISPLAY_ALL
   // Humidity and Temperature readings

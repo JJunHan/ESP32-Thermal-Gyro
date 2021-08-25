@@ -59,6 +59,48 @@
       padding-bottom: 15px;
       color: red;
     }
+    .cube-content{
+        width: 100%;
+        background-color: white;
+        height: 300px; margin: auto;
+        padding-top:2%;
+    }
+    #reset{
+        border: none;
+        color: #FEFCFB;
+        background-color: #003366;
+        padding: 10px;
+        text-align: center;
+        display: inline-block;
+        font-size: 14px; width: 150px;
+        border-radius: 4px;
+    }
+    #resetX, #resetY, #resetZ{
+        border: none;
+        color: #FEFCFB;
+        background-color: #003366;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        text-align: center;
+        display: inline-block;
+        font-size: 14px;
+        width: 20px;
+        border-radius: 4px;
+    }
+    .cards {
+        max-width: 800px;
+        margin: 0 auto;
+        display: grid; grid-gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .card {
+        background-color: white;
+        box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+    }
+    .card-title {
+        color:#003366;
+        font-weight: bold;
+    }
 </style>
 </head>
 
@@ -68,7 +110,32 @@
 <h2>ESP32 Mini Proj</h2>
 
 <h3>Output (every 1s)</h3>
-  
+<script src="three.min.js"></script>
+
+<div class="cards">
+    <div class="card">
+      <p class="card-title">GYROSCOPE</p>
+      <p><span class="reading">X: <span id="gyroX"></span> rad</span></p>
+      <p><span class="reading">Y: <span id="gyroY"></span> rad</span></p>
+      <p><span class="reading">Z: <span id="gyroZ"></span> rad</span></p>
+    </div>
+    <div class="card">
+      <p class="card-title">ACCELEROMETER</p>
+      <p><span class="reading">X: <span id="accX"></span> ms<sup>2</sup></span></p>
+      <p><span class="reading">Y: <span id="accY"></span> ms<sup>2</sup></span></p>
+      <p><span class="reading">Z: <span id="accZ"></span> ms<sup>2</sup></span></p>
+    </div>
+    <div class="card">
+      <p class="card-title">TEMPERATURE</p>
+      <p><span class="reading"><span id="temp"></span> &deg;C</span></p>
+      <p class="card-title">3D ANIMATION</p>
+      <button id="reset" onclick="resetPosition(this)">RESET POSITION</button>
+      <button id="resetX" onclick="resetPosition(this)">X</button>
+      <button id="resetY" onclick="resetPosition(this)">Y</button>
+      <button id="resetZ" onclick="resetPosition(this)">Z</button>
+    </div>
+</div>
+
 <div>
     <span class="output-labels">Gyro Readings: </span>
     <span class="output-labels2" id = "Gyro">%GyroPlaceholder%</span><br>
@@ -79,5 +146,11 @@
     <br>
 
 </div>
+
+<div class="cube-content">
+    <div id="3Dcube"></div>
+</div>
+
+<script src="script.js"></script>
 
 </body></html>
