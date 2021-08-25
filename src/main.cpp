@@ -67,9 +67,9 @@ float temperature = 0, humidity = 0;
 unsigned long lastTime = 0;  
 unsigned long lastTimeTemperature = 0;
 unsigned long lastTimeAcc = 0;
-unsigned long gyroDelay = 10;
+unsigned long gyroDelay = 500;
 unsigned long temperatureDelay = 1000;
-unsigned long accelerometerDelay = 200;
+unsigned long accelerometerDelay = 500;
 
 
 void initTEMP(){
@@ -141,15 +141,36 @@ String processors(const String& var){
 }
 
 String getAccReadings(){
-
+  String holder;
+  doc["accX"] = String(ax);
+  doc["accY"] = String(ay);
+  doc["accZ"] = String(az);
+  serializeJson(doc, holder);
+  //Serial.println(holder);
+  doc.clear();
+  return String(holder);
+  
 }
 
 String getGyroReadings(){
-
+  String holder;
+  doc["gyroX"] = String(gx);
+  doc["gyroY"] = String(gy);
+  doc["gyroZ"] = String(gz);
+  serializeJson(doc, holder);
+  //Serial.println(holder);
+  doc.clear();
+  return String(holder);
 }
 
-String getTemperature(){
-
+String getTemp_Humi(){
+  String holder;
+  doc["temp"] = String(sensor.readTemperature());
+  doc["humi"] = String(sensor.readHumidity());
+  serializeJson(doc, holder);
+  //Serial.println(holder);
+  doc.clear();
+  return String(holder);
 }
 
 
@@ -162,6 +183,7 @@ void setup() {
   initTEMP();
   //initBUZZER();
 
+/*
   doc["sensor"] = "gps";
   doc["time"] = 1351824120;
   JsonArray data = doc.createNestedArray("data");
@@ -171,7 +193,7 @@ void setup() {
   serializeJson(doc, Serial);
   Serial.println();
   serializeJsonPretty(doc, Serial);
-  
+*/
 
   // List all files in the flash system
   //listDir(SPIFFS,"/",3);
@@ -225,7 +247,12 @@ void setup() {
   
   server.serveStatic("/", SPIFFS, "/");
   
-
+  server.on("/reset", HTTP_GET, [](AsyncWebServerRequest *request){
+    gx=0;
+    gy=0;
+    gz=0;
+    request->send(200, "text/plain", "OK");
+  });
 
   // On error requests
   server.onNotFound([](AsyncWebServerRequest *request){
@@ -264,7 +291,7 @@ void loop() {
   }
   if ((millis() - lastTimeTemperature) > temperatureDelay) {
     // Send Events to the Web Server with the Sensor Readings
-    events.send(getTemperature().c_str(),"temperature_reading",millis());
+    events.send(getTemp_Humi().c_str(),"temperature_reading",millis());
     lastTimeTemperature = millis();
   }
 

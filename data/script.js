@@ -19,6 +19,7 @@ function init3D(){
 
   document.getElementById('3Dcube').appendChild(renderer.domElement);
 
+  /*
   // Create a geometry
   const geometry = new THREE.BoxGeometry(5, 1, 4);
 
@@ -33,6 +34,18 @@ function init3D(){
   ];
 
   const material = new THREE.MeshFaceMaterial(cubeMaterials);
+
+  cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+  camera.position.z = 5;
+  renderer.render(scene, camera);
+*/
+  const boxWidth = 5;
+  const boxHeight = 2;
+  const boxDepth = 4;
+  const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
+  const material = new THREE.MeshBasicMaterial({color: 0x03045e});  // greenish blue
 
   cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
@@ -85,7 +98,9 @@ if (!!window.EventSource) {
 
   source.addEventListener('temperature_reading', function(e) {
     console.log("temperature_reading", e.data);
-    document.getElementById("temp").innerHTML = e.data;
+    var obj = JSON.parse(e.data);
+    document.getElementById("temp").innerHTML = obj.temp;
+    document.getElementById("humi").innerHTML = obj.humi;
   }, false);
 
   source.addEventListener('accelerometer_readings', function(e) {
