@@ -25,6 +25,8 @@ Read the [things to take note](#things-to-take-note) below if you are interested
 - Managing serial communication protocols (I2C)
 - Controlling LED Driver via toggling CLK SDI and LE Pins
 - Using char arrays than String functions to reduce heap consumption
+- Threejs to create objects
+- Data collection from server and vice versa via different methods
 
 ## Work in progress
 

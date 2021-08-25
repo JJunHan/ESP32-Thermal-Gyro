@@ -13,13 +13,14 @@ function init3D(){
   scene.background = new THREE.Color(0xffffff);
 
   camera = new THREE.PerspectiveCamera(75, parentWidth(document.getElementById("3Dcube")) / parentHeight(document.getElementById("3Dcube")), 0.1, 1000);
-
+  console.log("width", parentWidth(document.getElementById("3Dcube")));
+  console.log("height", parentHeight(document.getElementById("3Dcube")));
   renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(parentWidth(document.getElementById("3Dcube")), parentHeight(document.getElementById("3Dcube")));
+  renderer.setSize(parentWidth(document.getElementById("3Dcube")), 500);
 
   document.getElementById('3Dcube').appendChild(renderer.domElement);
 
-  /*
+  
   // Create a geometry
   const geometry = new THREE.BoxGeometry(5, 1, 4);
 
@@ -36,10 +37,13 @@ function init3D(){
   const material = new THREE.MeshFaceMaterial(cubeMaterials);
 
   cube = new THREE.Mesh(geometry, material);
+  
   scene.add(cube);
   camera.position.z = 5;
   renderer.render(scene, camera);
-*/
+
+
+/*
   const boxWidth = 5;
   const boxHeight = 2;
   const boxDepth = 4;
@@ -51,6 +55,7 @@ function init3D(){
   scene.add(cube);
   camera.position.z = 5;
   renderer.render(scene, camera);
+  */
 }
 
 // Resize the 3D object when the browser window changes size
@@ -90,9 +95,9 @@ if (!!window.EventSource) {
     document.getElementById("gyroZ").innerHTML = obj.gyroZ;
 
     // Change cube rotation after receiving the readings
-    cube.rotation.x = obj.gyroY;
-    cube.rotation.z = obj.gyroX;
-    cube.rotation.y = obj.gyroZ;
+    cube.rotation.x = obj.gyroY / 1000;
+    cube.rotation.z = obj.gyroX / 1000;
+    cube.rotation.y = obj.gyroZ / 1000;
     renderer.render(scene, camera);
   }, false);
 
