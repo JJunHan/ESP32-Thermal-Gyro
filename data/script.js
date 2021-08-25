@@ -26,12 +26,12 @@ function init3D(){
 
   // Materials of each face
   var cubeMaterials = [
-    new THREE.MeshBasicMaterial({color:0x03045e}),
-    new THREE.MeshBasicMaterial({color:0x023e8a}),
-    new THREE.MeshBasicMaterial({color:0x0077b6}),
-    new THREE.MeshBasicMaterial({color:0x03045e}),
-    new THREE.MeshBasicMaterial({color:0x023e8a}),
-    new THREE.MeshBasicMaterial({color:0x0077b6}),
+    new THREE.MeshBasicMaterial({color:0xDFFF00}),
+    new THREE.MeshBasicMaterial({color:0xFFBF00}),
+    new THREE.MeshBasicMaterial({color:0xFF7F50}),
+    new THREE.MeshBasicMaterial({color:0x9FE2BF}),
+    new THREE.MeshBasicMaterial({color:0x40E0D0}),
+    new THREE.MeshBasicMaterial({color:0xDE3163}),
   ];
 
   const material = new THREE.MeshFaceMaterial(cubeMaterials);
@@ -95,10 +95,10 @@ if (!!window.EventSource) {
     document.getElementById("gyroZ").innerHTML = obj.gyroZ;
 
     // Change cube rotation after receiving the readings
-    cube.rotation.x = obj.gyroY / 1000;
-    cube.rotation.z = obj.gyroX / 1000;
-    cube.rotation.y = obj.gyroZ / 1000;
-    renderer.render(scene, camera);
+    //cube.rotation.x = 4 * ((obj.gyroX - 16000) / 32000) -2;
+    //cube.rotation.z = 4 * ((obj.gyroZ - 16000) / 32000) -2;
+    //cube.rotation.y = 4 * ((obj.gyroY - 16000) / 32000) -2;
+    //renderer.render(scene, camera);
   }, false);
 
   source.addEventListener('temperature_reading', function(e) {
@@ -114,6 +114,12 @@ if (!!window.EventSource) {
     document.getElementById("accX").innerHTML = obj.accX;
     document.getElementById("accY").innerHTML = obj.accY;
     document.getElementById("accZ").innerHTML = obj.accZ;
+
+    cube.rotation.x = 4 * ((obj.accX - 16000) / 32000) -2;
+    cube.rotation.z = 4 * ((obj.accZ - 16000) / 32000) -2;
+    cube.rotation.y = 4 * ((obj.accY - 16000) / 32000) -2;
+    renderer.render(scene, camera);
+
   }, false);
 }
 
