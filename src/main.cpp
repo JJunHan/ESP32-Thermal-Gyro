@@ -40,7 +40,7 @@
 
 // Server Variables
 const char* _ssid = "SINGTEL-BE9C (2.4G)";
-const char* _password = "x";
+const char* _password = "oopheishoh";
 AsyncWebServer server(80);
 String processors(const String& var);
 StaticJsonDocument<200> doc;
@@ -277,6 +277,9 @@ void setup() {
 
 void loop() {
 
+  // led1642gw_flush();
+  // led1642gw_set_channel(15,0xffff);
+  
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
   
   if ((millis() - lastTime) > gyroDelay) {

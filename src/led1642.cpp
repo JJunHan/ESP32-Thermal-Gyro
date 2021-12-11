@@ -10,8 +10,8 @@
 static uint16_t ledbuffer[16] = {
                                 0xffff, 0xffff, 0xffff, 0xffff, 
                                 0xffff, 0xffff, 0xffff, 0xffff, 
-                                0x0000, 0x0000, 0x0000, 0x0000, //THIS ARE CONTROLS FOR 7 SEG
-                                0xffff, 0x0000, 0xffff, 0x0000 //THIS ARE LEDS
+                                0x0000, 0xffff, 0x0000, 0x0000, //THIS ARE CONTROLS FOR 7 SEG
+                                0xffff, 0xffff, 0x0000, 0xffff //THIS ARE LEDS for, 0xffff = low, turn on led
                                 };
 static uint16_t config_reg[NUM_LED1642GW_ICs];
 
