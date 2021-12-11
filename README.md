@@ -34,8 +34,8 @@ Read the [things to take note](#things-to-take-note) below if you are interested
 
 ## How it looks like
 
-![Sample](source/sample.png)
-![Webserv](source/websev.png)
+![Sample](resource/sample.png)
+![Webserv](resource/websev.png)
 
 ## Things to take note
 
