@@ -40,7 +40,7 @@
 
 // Server Variables
 const char* _ssid = "SINGTEL-BE9C (2.4G)";
-const char* _password = "oopheishoh";
+const char* _password = "";
 AsyncWebServer server(80);
 String processors(const String& var);
 StaticJsonDocument<200> doc;
